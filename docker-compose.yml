@@ -1,0 +1,26 @@
+services:
+  mongodb:
+    image: mongo:7.0.5
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "admin"
+      MONGO_INITDB_ROOT_PASSWORD: "ADMIN"
+      MONGO_INITDB_DATABASE: "servico-usuario-db"
+    volumes:
+      - data_mongodb:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "'db.runCommand({ ping: 1 }).ok'" ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      - rede_mongodb
+volumes:
+  data_mongodb:
+    driver: local
+networks:
+  rede_mongodb:
+    driver: bridge
