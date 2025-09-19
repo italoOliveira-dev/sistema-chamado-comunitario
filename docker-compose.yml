@@ -6,16 +6,34 @@ services:
       - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: "admin"
-      MONGO_INITDB_ROOT_PASSWORD: "ADMIN"
+      MONGO_INITDB_ROOT_PASSWORD: "senha123"
       MONGO_INITDB_DATABASE: "servico-usuario-db"
     volumes:
       - data_mongodb:/data/db
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "'db.runCommand({ ping: 1 }).ok'" ]
+      test: ["CMD", "mongosh", "--eval", "db.runCommand({ ping: 1 }).ok"]
       interval: 15s
       timeout: 10s
       retries: 5
       start_period: 30s
+    networks:
+      - rede_mongodb
+
+  servico-usuario:
+    container_name: 'servico-usuario'
+    build:
+      context: ./servico-usuario
+      dockerfile: Dockerfile
+    environment:
+      URI_DATABASE_MONGODB: 'mongodb'
+      DATABASE_MONGODB: 'servico-usuario-db'
+      USER_MONGODB: 'admin'
+      PASSWORD_MONGODB: 'senha123'
+    ports:
+      - "8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
     networks:
       - rede_mongodb
 volumes:
