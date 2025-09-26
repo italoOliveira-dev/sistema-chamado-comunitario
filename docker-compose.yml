@@ -31,14 +31,45 @@ services:
       PASSWORD_MONGODB: 'senha123'
     ports:
       - "8081:8081"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
       - rede_mongodb
+      - rede_chamado_comunitario
+
+  servico-comunitario:
+    container_name: 'servico-autenticacao'
+    build:
+      context: ./servico-autenticacao
+      dockerfile: Dockerfile
+    environment:
+      URI_DATABASE_MONGODB: 'mongodb'
+      DATABASE_MONGODB: 'servico-usuario-db'
+      USER_MONGODB: 'admin'
+      PASSWORD_MONGODB: 'senha123'
+    ports:
+      - "8082:8082"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      servico-usuario:
+        condition: service_healthy
+    networks:
+      - rede_mongodb
+      - rede_chamado_comunitario
+
 volumes:
   data_mongodb:
     driver: local
 networks:
   rede_mongodb:
+    driver: bridge
+  rede_chamado_comunitario:
     driver: bridge

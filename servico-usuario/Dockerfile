@@ -11,4 +11,5 @@ RUN apt-get update && \
 
 USER appuser
 COPY --from=build /app/build/libs/*.jar /app/app.jar
+EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
