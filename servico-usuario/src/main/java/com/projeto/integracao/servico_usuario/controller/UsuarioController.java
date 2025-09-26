@@ -2,6 +2,7 @@ package com.projeto.integracao.servico_usuario.controller;
 
 import com.projeto.integracao.servico_usuario.dto.requests.AtualizaDadosUsuarioRequest;
 import com.projeto.integracao.servico_usuario.dto.requests.NovoUsuarioRequest;
+import com.projeto.integracao.servico_usuario.dto.responses.UsuarioCredentialsResponse;
 import com.projeto.integracao.servico_usuario.dto.responses.UsuarioResponse;
 import com.projeto.integracao.servico_usuario.exception.handlerException.MensagemPadraoErro;
 import com.projeto.integracao.servico_usuario.exception.handlerException.MensagemValidacaoErro;
@@ -88,6 +89,29 @@ public interface UsuarioController {
     @GetMapping("/{id}")
     ResponseEntity<UsuarioResponse> obterUsuario(@Parameter(description = "Usuario id", required = true, example = "68c4cdc1e0b991697e5c2e9d")
                                                  @PathVariable String id);
+
+    @Operation(summary = "Obter usuário por Email")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Usuário encontrado",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = UsuarioResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Usuário não encontrado",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = MensagemPadraoErro.class)
+                    )
+            )
+    })
+    @GetMapping("buscarEmail/{email}")
+    ResponseEntity<UsuarioCredentialsResponse> obterUsuarioPorEmail(@Parameter(description = "Email Usuario", required = true, example = "68c4cdc1e0b991697e5c2e9d")
+                                                 @PathVariable String email);
 
     @Operation(summary = "Atualizar dados do usuário")
     @ApiResponses(value = {

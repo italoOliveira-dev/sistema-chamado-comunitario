@@ -3,8 +3,8 @@ package com.projeto.integracao.servico_usuario.controller.impl;
 import com.projeto.integracao.servico_usuario.controller.UsuarioController;
 import com.projeto.integracao.servico_usuario.dto.requests.AtualizaDadosUsuarioRequest;
 import com.projeto.integracao.servico_usuario.dto.requests.NovoUsuarioRequest;
+import com.projeto.integracao.servico_usuario.dto.responses.UsuarioCredentialsResponse;
 import com.projeto.integracao.servico_usuario.dto.responses.UsuarioResponse;
-import com.projeto.integracao.servico_usuario.repository.UsuarioRepository;
 import com.projeto.integracao.servico_usuario.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +41,11 @@ public class UsuarioControllerImpl implements UsuarioController {
     @Override
     public ResponseEntity<UsuarioResponse> obterUsuario(String id) {
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    }
+
+    @Override
+    public ResponseEntity<UsuarioCredentialsResponse> obterUsuarioPorEmail(String email) {
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(email));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.projeto.integracao.servico_usuario.service.impl;
 
 import com.projeto.integracao.servico_usuario.dto.requests.AtualizaDadosUsuarioRequest;
 import com.projeto.integracao.servico_usuario.dto.requests.NovoUsuarioRequest;
+import com.projeto.integracao.servico_usuario.dto.responses.UsuarioCredentialsResponse;
 import com.projeto.integracao.servico_usuario.dto.responses.UsuarioResponse;
 import com.projeto.integracao.servico_usuario.entity.RolePerfilEnum;
 import com.projeto.integracao.servico_usuario.entity.Usuario;
@@ -27,6 +28,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final UsuarioMapper usuarioMapper;
 
     @Override
     @Transactional
@@ -66,6 +68,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void deletarPorId(String id) {
         usuarioRepository.delete(obterPorId(id));
+    }
+
+    @Override
+    public UsuarioCredentialsResponse buscarPorEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new UsuarioNaoEncontradoException(
+                String.format("Usuario com email %s não encontrado!", email)
+        ));
+
+        return usuarioMapper.toCredentialUsers(usuario);
     }
 
     private Usuario obterPorId(String id) {

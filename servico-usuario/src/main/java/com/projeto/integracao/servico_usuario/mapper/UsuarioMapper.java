@@ -3,6 +3,7 @@ package com.projeto.integracao.servico_usuario.mapper;
 import com.projeto.integracao.servico_usuario.dto.EnderecoDto;
 import com.projeto.integracao.servico_usuario.dto.TelefoneDto;
 import com.projeto.integracao.servico_usuario.dto.requests.NovoUsuarioRequest;
+import com.projeto.integracao.servico_usuario.dto.responses.UsuarioCredentialsResponse;
 import com.projeto.integracao.servico_usuario.dto.responses.UsuarioResponse;
 import com.projeto.integracao.servico_usuario.entity.Endereco;
 import com.projeto.integracao.servico_usuario.entity.Telefone;
@@ -65,6 +66,15 @@ public class UsuarioMapper {
                 .endereco(usuario.getEndereco())
                 .telefones(usuario.getTelefones())
                 .perfis(perfisOtimizado)
+                .build();
+    }
+
+    public UsuarioCredentialsResponse toCredentialUsers(Usuario usuario) {
+        return UsuarioCredentialsResponse.builder()
+                .id(usuario.getId())
+                .nome(usuario.getNome())
+                .email(usuario.getEmail())
+                .senha(usuario.getSenha())
                 .build();
     }
 }

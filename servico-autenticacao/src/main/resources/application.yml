@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: servico-autenticacao
+  data:
+    mongodb:
+      uri: 'mongodb://${USER_MONGODB:admin}:${PASSWORD_MONGODB:senha123}@${URI_DATABASE_MONGODB:localhost}/${DATABASE_MONGODB:servico-usuario-db}?authSource=admin'
+
+springdoc:
+  open-api:
+    title: "API do serviço de autenticação"
+    description: "Componente responsável pela autenticação e geração de refresh token"
+    version: "1.0.0"
+
+jwt:
+  secret: HRpNZHAO3siltJg2oGV4rjIk0LDwN-wT9vUXwCVZMw8
+  expiration: 300000
+  expiration-sec: 300
+server:
+  port: 8082
