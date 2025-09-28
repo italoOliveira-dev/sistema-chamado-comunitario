@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "AuthController", description = "Controller responsável para autenticação de usuários")
@@ -65,7 +66,7 @@ public interface AuthController {
             )
     })
     @PostMapping("/login")
-    ResponseEntity<TokenResponse> tokenResponse(final LoginRequest loginRequest) throws Exception;
+    ResponseEntity<TokenResponse> tokenResponse(@RequestBody final LoginRequest loginRequest) throws Exception;
 
     @Operation(summary = "Refresh token")
     @ApiResponses(value = {
@@ -110,5 +111,5 @@ public interface AuthController {
             )
     })
     @PostMapping("/refresh-token")
-    ResponseEntity<RefreshTokenResponse> refreshToken(final RefreshTokenRequest refreshTokenRequest) throws Exception;
+    ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody final RefreshTokenRequest refreshTokenRequest) throws Exception;
 }

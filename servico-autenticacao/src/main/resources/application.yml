@@ -5,6 +5,13 @@ spring:
     mongodb:
       uri: 'mongodb://${USER_MONGODB:admin}:${PASSWORD_MONGODB:senha123}@${URI_DATABASE_MONGODB:localhost}/${DATABASE_MONGODB:servico-usuario-db}?authSource=admin'
 
+eureka:
+  client:
+    service-url:
+      fetch-registry: true
+      register-with-eureka: true
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
 springdoc:
   open-api:
     title: "API do serviço de autenticação"

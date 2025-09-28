@@ -17,7 +17,46 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      - rede_mongodb
+      - rede_chamado_comunitario
+
+  mysqldb:
+    image: mysql:8.0.33
+    container_name: mysqldb
+    environment:
+      MYSQL_ROOT_PASSWORD: senha123
+      MYSQL_DATABASE: sistemaChamadodb
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "mysql -u root -psenha123 -e 'SELECT 1;' || exit 1"
+      ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - data_mysqldb:/var/lib/mysql
+    networks:
+      - rede_chamado_comunitario
+
+  servico-descoberta:
+    container_name: 'servico-descoberta'
+    build:
+      context: ./servico-descoberta
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    expose:
+      - 8761
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8761/actuator/health || exit 1" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    networks:
+      - rede_chamado_comunitario
 
   servico-usuario:
     container_name: 'servico-usuario'
@@ -29,22 +68,25 @@ services:
       DATABASE_MONGODB: 'servico-usuario-db'
       USER_MONGODB: 'admin'
       PASSWORD_MONGODB: 'senha123'
+      EUREKA_URI: http://servico-descoberta:8761/eureka
     ports:
       - "8081:8081"
+    expose:
+      - 8081
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1" ]
       interval: 20s
       timeout: 10s
       retries: 5
-      start_period: 60s
     depends_on:
       mongodb:
         condition: service_healthy
+      servico-descoberta:
+        condition: service_healthy
     networks:
-      - rede_mongodb
       - rede_chamado_comunitario
 
-  servico-comunitario:
+  servico-autenticacao:
     container_name: 'servico-autenticacao'
     build:
       context: ./servico-autenticacao
@@ -54,22 +96,62 @@ services:
       DATABASE_MONGODB: 'servico-usuario-db'
       USER_MONGODB: 'admin'
       PASSWORD_MONGODB: 'senha123'
+      EUREKA_URI: http://servico-descoberta:8761/eureka
     ports:
       - "8082:8082"
+    expose:
+      - 8082
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
     depends_on:
       mongodb:
         condition: service_healthy
       servico-usuario:
         condition: service_healthy
+      servico-descoberta:
+        condition: service_healthy
     networks:
-      - rede_mongodb
+      - rede_chamado_comunitario
+
+  servico-chamado:
+    container_name: 'servico-chamado'
+    build:
+      context: ./servico-chamado-comunitario
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_URI: 'mysqldb'
+      MYSQL_USERNAME: 'root'
+      MYSQL_PASSWORD: 'senha123'
+      MYSQL_DATABASE: 'sistemaChamadodb'
+      EUREKA_URI: http://servico-descoberta:8761/eureka
+    ports:
+      - "8083:8083"
+    expose:
+      - 8083
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8083/actuator/health || exit 1" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+      servico-descoberta:
+        condition: service_healthy
+      servico-usuario:
+        condition: service_healthy
+    networks:
       - rede_chamado_comunitario
 
 volumes:
   data_mongodb:
     driver: local
+  data_mysqldb:
+    driver: local
+
 networks:
-  rede_mongodb:
-    driver: bridge
   rede_chamado_comunitario:
     driver: bridge
