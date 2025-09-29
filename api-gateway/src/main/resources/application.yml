@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: servico-usuario-api
+          uri: ${URI_SERVICO_USUARIO:http://localhost:8081}
+          predicates:
+            - Path=/api/usuarios/**
+
+        - id: servico-autenticacao
+          uri: ${URI_SERVICO_AUTENTICACAO:http://localhost:8082}
+          predicates:
+            - Path=/api/auth/**
+
+        - id: servico-chamado
+          uri: ${URI_SERVICO_CHAMADO:http://localhost:8083}
+          predicates:
+            - Path=/api/chamados/**
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
