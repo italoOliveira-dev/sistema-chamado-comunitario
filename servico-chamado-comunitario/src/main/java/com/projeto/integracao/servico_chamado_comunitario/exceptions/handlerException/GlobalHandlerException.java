@@ -1,5 +1,6 @@
 package com.projeto.integracao.servico_chamado_comunitario.exceptions.handlerException;
 
+import com.projeto.integracao.servico_chamado_comunitario.exceptions.GenericFeignException;
 import com.projeto.integracao.servico_chamado_comunitario.exceptions.StatusChamadoNaoExisteException;
 import com.projeto.integracao.servico_chamado_comunitario.exceptions.UsuarioNaoEncontradoException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,9 +13,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalHandlerException {
+
+    @ExceptionHandler(GenericFeignException.class)
+    public ResponseEntity<Map> handleGenericFeignException(final GenericFeignException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getError());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<MensagemValidacaoErro> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex,
